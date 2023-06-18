@@ -1,0 +1,86 @@
+{% extends 'voting.html' %}
+{% block ballot  %}
+<div>
+<input type = "text" id = "search" placeholder = "Search">
+</div>
+
+<form method = "POST">
+
+    {% csrf_token %}
+    <div class = "choices flex">
+    {% for votee,voteeinfo in votees.items %}
+        <div id ="id_{{voteeinfo.id}}">
+        <label for = "{{voteeinfo.id}}">{{forloop.counter}}. </label>
+        <input type = "checkbox" id ="{{voteeinfo.id}}" value = "{{ voteeinfo.id }}" name = "checkbox number {{forloop.counter}}" class = "checkbox" data-licence ={{voteeinfo.licence}} data-name = {{voteeinfo.name}} >
+        <label for= "{{voteeinfo.id}}">{{voteeinfo.name}} , <span class = "italic">licence: </span>{{voteeinfo.licence}}</label>
+        </div>
+            
+    {% endfor %}
+    </div>
+    <input type = "button"  onclick = "countChecked()" value = "Confirm choices" class = "btn">
+    <button type = "submit" class = "hidden" id = "submitbutton" >Submit</button>
+
+</form>
+
+<form method = "POST" class = "logout">
+    {% csrf_token %}
+    <input type = "hidden" value = "logout" name = "logout">
+    <button type = "submit">
+        Log Out
+    </button>
+</form>
+    
+
+<script>
+
+function countChecked(){
+
+    var checkboxes = document.getElementsByClassName("checkbox");
+    var checkedCount = 0;
+
+    for (var i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i].checked) {
+        checkedCount++;
+      }
+    }
+    if (checkedCount > 5) {
+
+        window.alert("Please select 5 or less candidates.")
+
+    }
+    else if (checkedCount < 1){
+        window.alert("Please select 1 or more candidates.")
+    }
+    else {
+
+        var button = document.getElementById("submitbutton")
+        button.className = ""
+
+    }
+
+
+}
+
+let searchField = document.getElementById('search')
+let checkboxes = Array.from(document.getElementsByClassName("checkbox"))
+checkboxes.forEach(function(checkbox){
+    checkbox.addEventListener("change",function(){
+        var button = document.getElementById("submitbutton")
+        button.className = "hidden"
+    })
+})
+searchField.addEventListener('input', function(){
+    checkboxes.forEach(function(element) {
+        let searchQuery = document.getElementById('search').value.toUpperCase()
+        let elementToHide = document.getElementById(`id_${element.id}`)
+        if(element.dataset.name.toUpperCase().includes(searchQuery) || element.dataset.licence.toUpperCase().includes(searchQuery)|| element.checked){
+            elementToHide.style.display = "block"
+        } else {
+            elementToHide.style.display = "none"
+        }
+    })
+})
+
+</script>
+{% endblock  %}
+

@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class = "forms-wrapper">
+    <form method = "POST" class = "ui">
+        {% csrf_token %}
+        <select name = "election">
+        {% for item in elections  %}
+    
+        <option value = {{item.id}} name ="elections">{{item.name_of_election}}</option>
+        
+        {% endfor %}
+        </select>
+        <button type = "submit"> Select Election </button>
+    </form>
+    
+    
+    <form method = "POST" class = "ui">
+        {% csrf_token %}
+        <input type = "hidden" value = "logout" name = "logout">
+        <button type = "submit">
+            Log Out
+        </button>
+    </form>
+    </div>
+
+
+
+
+
+
+
+<div class = "wrapper">
+    <h1 class = "phase" >
+        {% if election.Phase == 0 %}
+        Candidacy Phase
+        <br> {{election.name_of_election}}
+        {% elif election.Phase == 1 %}
+        Voting Phase
+        <br> {{election.name_of_election}}
+        {%elif election.Phase == 2 %}
+        {% if history %}
+        {{election.name_of_election}}
+        {% else %}
+        No Current Election
+        {% endif %}
+        {% else %}
+        No Elections Available
+        {% endif %}
+        
+    </h1>
+{% if election.Phase == 0 or election.Phase == 1 or history  %}
+
+{% for region,local in votes.items%}
+<div class = "region">
+ <div class = "region-title">
+    <h2>{{region.name}}</h2>
+ </div>
+
+
+ <div class = "region-table" >
+<table>
+    {% for local,user in local.items %}
+    <tr>
+        <th>{{local.name}} </th>
+        {% for user,value in user.items %}
+        
+        
+        <td title = "{{user.licence}}"> {{user.first_name}} {{user.last_name}} : {{value}} </td>
+        {% endfor %}
+    </tr>    
+    
+    {% endfor %}
+
+</table>
+
+</div>
+</div>
+{%endfor%} 
+
+{% endif %}
+<form method = "POST" class = "advance">
+    {% csrf_token %}
+    
+
+    <input type="hidden" value = "advance" name = "advance">
+    <div class = "flex gap">
+    <button type = "submit" class = "advancebutton"> 
+
+    {% if election.Phase == 2 or election == "None" %}
+
+    Create new election
+
+    {% else %}
+
+    Advance election process
+
+    {% endif %}
+        
+
+    </button>
+
+    {% if election.Phase == 2 or election == "None"  %}
+
+    <input type = "text" name = "name_of_election" placeholder = "Name of election" class = "inputfield"></input>
+
+    {% endif %}
+    </div>
+</form>
+
+<form method = "POST" class = "advance" enctype = "multipart/form-data">
+    {% csrf_token %}
+    <input type = "file" name ="file" required id = "id_file">
+<input type ="submit" class = "btn">
+</form>
+
+</div>
+{% if election.Phase == 0 or election.Phase == 1 or history  %}
+<h2>{{votercount}} emails have been sent for this election.</h2>
+{% endif %}
+<script>
+    document.querySelectorAll(".region-title").forEach(item => {
+        let ctr = 0
+        let sibling = item.nextElementSibling
+        item.addEventListener('click', event => {
+            if(!sibling.style.display || sibling.style.display == 'none') {
+                sibling.classList.toggle('open')
+                item.classList.toggle('open')
+            } else {
+                sibling.classList.toggle('open')
+                item.classList.toggle('open')
+            }
+            
+        })
+    })
+
+
+
+</script>
+
+{% endblock content %}
+
+
+

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content%}
+<div class = "voting flex">
+<div class = "info flex">
+<p> <span class = "strong"> name: </span > {{ currentuser.name}}</p>
+<p> <span class = "strong">licence number: </span >{{currentuser.licence}}</p>
+<p> <span class = "strong">ballot id:</span > {{ key }}</p>
+<p> <span class = "strong">local center:</span >{{currentuser.local_center}}</p>
+</div>
+{% block ballot %}
+</div>
+{% endblock %}
+
+{% endblock %}
+
